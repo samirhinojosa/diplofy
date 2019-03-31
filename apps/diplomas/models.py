@@ -137,3 +137,23 @@ class Badge(TimeStampedAuthModel):
 
     def get_absolute_url(self):
         return reverse('badge', args=[str(self.id)])
+
+
+class Recipient(TimeStampedAuthModel):
+    """
+    Store a user's recipient
+
+    In the future, this should be in the Custom User Model
+    """
+    first_name = models.CharField('First name', max_length=150, help_text='First name of the user')
+    last_name = models.CharField('Last name', max_length=150, help_text='Last name of the user')
+    telephone = models.CharField('Telephone', max_length=50, blank=True, help_text='Telephone of the issuer')
+    email = models.EmailField('Email', max_length=100, unique=True, help_text='Email of the issuer')
+
+    class Meta:
+        ordering = ['-created']
+        verbose_name = "Recipient"
+        verbose_name_plural = "Recipients"
+
+    def __str__(self):
+        return '%s %s' % (self.first_name, self.first_name)

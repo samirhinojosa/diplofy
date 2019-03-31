@@ -1,12 +1,13 @@
 from django.contrib import admin
 from django.utils.safestring import mark_safe
-from .models import Issuer, Badge, Tag
+from .models import Issuer, Badge, Tag, Recipient
 
 
 class IssuerAdmin(admin.ModelAdmin):
     """
     Django admin of Issuers
     """
+    can_delete = False
     list_display = [
         'get_thumbnail', 'name', 
         'created', 'created_by', 'modified', 'modified_by'
@@ -131,6 +132,36 @@ class BadgeAdmin(admin.ModelAdmin):
                 '<img src="/media/not-available.png" width="75" height="75" >'
             )
 
+
+class RecipientAdmin(admin.ModelAdmin):
+    """
+    Django admin of Recipient
+    """
+    list_display = [
+        'email', 'first_name', 'last_name', 'created', 'created_by'
+    ] 
+    list_display_links = [
+        'email'
+    ] 
+    readonly_fields = [
+        'created', 'created_by', 'modified', 'modified_by'
+    ]
+    fields = [
+        'first_name', 'last_name', 'telephone', 'email',
+        'created', 'created_by', 'modified', 'modified_by'
+    ]
+
+    def save_model(self, request, obj, form, change):
+        if not change:
+            obj.created_by = request.user
+        else:
+            obj.modified_by = request.user
+        obj.save()
+
+
+
+
+admin.site.register(Recipient, RecipientAdmin)
 admin.site.register(Tag, TagAdmin)
 admin.site.register(Badge, BadgeAdmin)
 admin.site.register(Issuer, IssuerAdmin)
