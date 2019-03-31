@@ -20,7 +20,7 @@ def thumbnail_image(image):
     """
     basewidth = 150
 
-    img = Image.open(image)
+    img = Image.open(image) #Image.open('old.jpeg').convert('RGB').save('new.jpeg')
     im_io = BytesIO()
 
     #Calculating the new size considerings its aspect ratio

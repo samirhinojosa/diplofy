@@ -1,27 +1,62 @@
 from django.conf import settings
 from django.utils.text import slugify
-from datetime import datetime
 
 
-def upload_to_image_post(self, filename):
+def upload_to_image(self, filename, flag):
     """
-    Stores the issuer's image in a specific path regards its name
-    """    
+    Stores the image in a specific path regards object's name & class
+
+    Structure of paths:
+        - diplomas/issuer/
+        - diplomas/issuer/thumbnail        
+        - diplomas/badges/nombredelissuer/
+        - diplomas/badges/nombredelissuer/thumbnail
+        - diplomas/badges/nombredelissuer/linkedin
+        - diplomas/badges/nombredelissuer/linkedin/thumbnail
+    """ 
     ext = filename.split('.')[-1]
-    name = slugify(self.name) 
+    name = slugify(self.name)
+    file_path = ''
+    filename = ''
 
-    filename = '%s.%s' % (name, ext)
+    if self.__class__.__name__ == 'Issuer':
+        if flag == 'image':
+            file_path = 'diplomas/issuers/'
+            filename = '%s.%s' % (name, ext)
+        elif flag == 'thumb': 
+            file_path = 'diplomas/issuers/thumbnails/'
+            filename = '%s_thumb.%s' % (name, ext)
+    elif self.__class__.__name__ == 'Badge':
+        if flag == 'image':
+            file_path = 'diplomas/badges/%s/' % (self.issuer.slug)
+            filename = '%s.%s' % (name, ext)
+        elif flag == 'thumb': 
+            file_path = 'diplomas/badges/%s/thumbnails/' % (self.issuer.slug)
+            filename = '%s_thumb.%s' % (name, ext)
+        elif flag == 'linkedin': 
+            file_path = 'diplomas/badges/%s/linkedin/' % (self.issuer.slug)
+            filename = '%s_in.%s' % (name, ext)
+        elif flag == 'linkedin_thumb': 
+            file_path = 'diplomas/badges/%s/linkedin/thumbnails/' % (self.issuer.slug)
+            filename = '%s_in_thumb.%s' % (name, ext)
 
-    return '%s/diplomas/issuers/%s' % (settings.MEDIA_ROOT, filename)
+    return '%s/%s/%s' % (settings.MEDIA_ROOT, file_path, filename)
 
 
-def upload_to_thumbnail_post(self, filename):
-    """
-    Stores the issuer's thumbnail in a specific its name
-    """    
-    ext = filename.split('.')[-1]
-    name = slugify(self.name) 
+def issuer_image(instance, filename):
+    return upload_to_image(instance, filename, 'image')
 
-    filename = "%s_thumb.%s" % (name, ext)
-  
-    return '%s/diplomas/issuers/thumbnail/%s' % (settings.MEDIA_ROOT, filename)
+def issuer_image_thumb(instance, filename):
+    return upload_to_image(instance, filename, 'thumb')
+
+def badge_image(instance, filename):
+    return upload_to_image(instance, filename, 'image')
+
+def badge_image_thumb(instance, filename):
+    return upload_to_image(instance, filename, 'thumb')
+
+def badge_image_linkedin(instance, filename):
+    return upload_to_image(instance, filename, 'linkedin')
+
+def badge_image_linkedin_thumb(instance, filename):
+    return upload_to_image(instance, filename, 'linkedin_thumb')

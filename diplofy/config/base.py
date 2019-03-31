@@ -28,6 +28,7 @@ THIRD_PARTY_APPS = [
 ]
 
 PROJECT_APPS = [
+    'apps.contactus',
     'apps.diplomas',
     'apps.utils',
     'apps.users',
