@@ -7,10 +7,19 @@ def compress_image(image):
     """
     Compress image in format JPEG and specific quality 
     """
-    im = Image.open(image)
+    img = Image.open(image)
+
+    if img.format == 'JPEG':
+        im_format = 'JPEG'
+    elif img.format == 'PNG':
+        im_format = 'PNG'
+    
     im_io = BytesIO()
-    im.save(im_io , format='JPEG', quality=80)
-    image_optimized = File(im_io, name=image.name)    
+
+    #Saving the image
+    img.save(im_io , format=im_format, quality=80)
+    image_optimized = File(im_io, name=image.name) 
+
     return image_optimized
 
 
@@ -20,7 +29,13 @@ def thumbnail_image(image):
     """
     basewidth = 150
 
-    img = Image.open(image) #Image.open('old.jpeg').convert('RGB').save('new.jpeg')
+    img = Image.open(image) 
+
+    if img.format == 'JPEG':
+        im_format = 'JPEG'
+    elif img.format == 'PNG':
+        im_format = 'PNG'
+
     im_io = BytesIO()
 
     #Calculating the new size considerings its aspect ratio
@@ -31,6 +46,7 @@ def thumbnail_image(image):
     img = img.resize((basewidth,hsize), Image.ANTIALIAS)
     
     #Saving the image
-    img.save(im_io , format='JPEG', quality=100)
+    img.save(im_io , format=im_format, quality=100)
     image_optimized = File(im_io, name=image.name)    
+
     return image_optimized

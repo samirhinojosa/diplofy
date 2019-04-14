@@ -1,10 +1,17 @@
+import uuid
 from django.db import models
 from django.utils.text import slugify
 from django.urls import reverse 
 from apps.utils.models import TimeStampedAuthModel
 from apps.utils.utils import compress_image, thumbnail_image
-from .helpers import (issuer_image, issuer_image_thumb, badge_image, badge_image_thumb, 
-                        badge_image_linkedin, badge_image_linkedin_thumb)
+from .helpers import (
+    issuer_image, 
+    issuer_image_thumb, 
+    badge_image, 
+    badge_image_thumb, 
+    badge_image_linkedin, 
+    badge_image_linkedin_thumb
+)
 
 
 class Issuer(TimeStampedAuthModel):
@@ -39,7 +46,7 @@ class Issuer(TimeStampedAuthModel):
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name)
 
-        if self.pk is not None:
+        if self.created:
             orig = Issuer.objects.get(pk=self.pk)
             if orig.image != self.image:
                 self.image = compress_image(self.image)            
@@ -78,6 +85,7 @@ class Tag(TimeStampedAuthModel):
     def get_absolute_url(self):
         return reverse('tag', args=[str(self.id)])
 
+
 class Badge(TimeStampedAuthModel):
     """
     Store a badge
@@ -87,6 +95,7 @@ class Badge(TimeStampedAuthModel):
 
     Missing fields: type, alignment
     """
+    id = models.UUIDField('Id', primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField('Badge', max_length=150, help_text='Name of the badge')
     url = models.URLField('Website', max_length=200, blank=True, help_text='Website of the badge')
     slug = models.SlugField('Slug', max_length=150, help_text='Name of the badge in format URL')
@@ -117,7 +126,7 @@ class Badge(TimeStampedAuthModel):
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name)
 
-        if self.pk is not None:
+        if self.created:
             orig = Badge.objects.get(pk=self.pk)
             if orig.image != self.image:
                 self.image = compress_image(self.image)            
@@ -156,4 +165,46 @@ class Recipient(TimeStampedAuthModel):
         verbose_name_plural = "Recipients"
 
     def __str__(self):
-        return '%s %s' % (self.first_name, self.first_name)
+        return '%s %s' % (self.first_name, self.last_name)
+
+
+class Assertion(TimeStampedAuthModel):
+    """
+    Store a assertion
+
+    Open Badges specification of Badge
+    https://www.imsglobal.org/sites/default/files/Badges/OBv2p0Final/index.html#Assertion
+
+    Missing fields: type, verification, image, evidence, narrative, revoked, revocationReason
+    """
+    licence = models.CharField('License', max_length=150, unique=True, help_text='Generated automatically')
+    recipient = models.ForeignKey(Recipient, on_delete=models.CASCADE, help_text='Recipient')
+    badge = models.ForeignKey(Badge, on_delete=models.CASCADE, help_text='Badge')
+    issued_on = models.DateField('Issued on', null=True, help_text="Issued's day")
+    expires = models.DateField('Expires on', null=True, help_text="Expired's day")
+    short_url = models.URLField("Assertion's short url", max_length=200, blank=True, help_text="Assertion's short url")
+    sent = models.BooleanField('Assertion sent', default=False, help_text="If it's false, the assertion hasn't been sent")
+
+    class Meta:
+        unique_together = [
+            ('recipient', 'badge')
+        ]
+        ordering = ['-created']
+        verbose_name = "Assertion"
+        verbose_name_plural = "Assertions"
+
+    def __str__(self):
+        return '%s %s' % (self.recipient.first_name, self.recipient.last_name)
+
+    def save(self, *args, **kwargs):
+
+        if not self.created:
+            licence = ''
+            while not licence:
+                licence = uuid.uuid1().int>>64
+                if not Assertion.objects.filter(licence=licence).exists():
+                    self.licence = licence
+                else:
+                    licence = ''
+                 
+        super(Assertion, self).save(*args, **kwargs)

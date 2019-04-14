@@ -18,8 +18,19 @@ from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
 
+from apps.diplomas.admin import diplofy_admin_site
+
+diplofy_admin_site.site_header = "Diplofy's Admin"
+diplofy_admin_site.site_title = "Diplofy's Admin Portal"
+diplofy_admin_site.index_title = "Welcome to Diplofy's Portal"
+
+admin.site.site_header = "Diplofy's Admin"
+admin.site.site_title = "Diplofy's Admin Portal"
+admin.site.index_title = "Welcome to Diplofy's Portal"
+
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('my-admin/', admin.site.urls),
+    path('myadmin/', diplofy_admin_site.urls),
 ]
 
 if settings.DEBUG is True:
