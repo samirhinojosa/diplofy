@@ -181,7 +181,7 @@ class Assertion(TimeStampedAuthModel):
     recipient = models.ForeignKey(Recipient, on_delete=models.CASCADE, help_text='Recipient')
     badge = models.ForeignKey(Badge, on_delete=models.CASCADE, help_text='Badge')
     issued_on = models.DateField('Issued on', null=True, help_text="Issued's day")
-    expires = models.DateField('Expires on', null=True, help_text="Expired's day")
+    expires = models.DateField('Expires on', null=True, blank=True, help_text="Expired's day")
     short_url = models.URLField("Assertion's short url", max_length=200, blank=True, help_text="Assertion's short url")
     sent = models.BooleanField('Assertion sent', default=False, help_text="If it's false, the assertion hasn't been sent")
 

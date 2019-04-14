@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from .forms import UserCreationForm, UserChangeForm
-from .models import User, ProxyUser
+from .models import User, ProxyUser, ProxyGroup
 from apps.diplomas.admin import diplofy_admin_site
 
 
@@ -22,3 +22,4 @@ admin.site.register(ProxyUser, UserAdmin)
 
 #Diplofy's admin customed
 diplofy_admin_site.register(ProxyUser, UserAdmin)
+diplofy_admin_site.register(ProxyGroup)

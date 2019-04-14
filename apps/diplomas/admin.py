@@ -225,7 +225,10 @@ class RecipientResource(resources.ModelResource):
         fields = ('id', 'first_name', 'last_name', 'telephone', 'email', 'created_by', 'modified_by')
 
     def before_import_row(self, row, **kwargs):
-        row['created_by'] = kwargs.get('user')
+        if not row['id']:
+            row['created_by'] = kwargs.get('user')
+        else:
+            row['modified_by'] = kwargs.get('user')
 
 
 class RecipientAdmin(ImportMixin, admin.ModelAdmin):
@@ -315,21 +318,11 @@ class AssertionResource(resources.ModelResource):
                     'issued_on', 'expires', 'short_url')
     
     def before_import_row(self, row, **kwargs):
-        row['short_url'] = 'short_url'
-        row['created_by'] = kwargs.get('user')
-        row['modified_by'] = kwargs.get('user')
-   
-    #
-    # def after_import_row(self, row, row_result, **kwargs):
-    #    recipient = Recipient.objects.get(first_name=row['first_name'])
-    #    recipient.first_name = 'mariquita'
-     #   recipient.save()
-    
-    #def after_import_row(self, row, row_result, **kwargs):
-            #instance = CatLivreAuthor.objects.get(id=row['id'])
-            #save_image_from_row(instance, row)
- 
-        
+        if not row['id']:
+            row['created_by'] = kwargs.get('user')
+        else:
+            row['modified_by'] = kwargs.get('user')
+
 
 class AssertionAdmin(ImportMixin, admin.ModelAdmin):
     """
@@ -350,11 +343,11 @@ class AssertionAdmin(ImportMixin, admin.ModelAdmin):
         'recipient'
     ]
     readonly_fields = [
-        'id', 'licence', 'email', 'issuer', 'short_url', 'sent', 'created', 'created_by', 'modified', 'modified_by'
+        'id', 'licence', 'email', 'get_badge_thumbnail', 'issuer', 'get_issuer_thumbnail', 'short_url', 'sent', 'created', 'created_by', 'modified', 'modified_by'
     ]
     fieldsets  = [
         ("Assertion's details", {
-            'fields': ('id', 'licence', 'recipient', 'email', 'badge', 'issuer', 'issued_on', 'expires',
+            'fields': ('id', 'licence', 'recipient', 'email', 'badge', 'get_badge_thumbnail', 'issuer', 'get_issuer_thumbnail', 'issued_on', 'expires',
                         'short_url', 'sent')
         }),
         ('Audit', {
@@ -371,6 +364,31 @@ class AssertionAdmin(ImportMixin, admin.ModelAdmin):
 
     def slug(self, obj):
         return obj.user.slug
+
+    def get_badge_thumbnail(self, obj):
+        """ Get the issuer's thumbnail in the admin """
+
+        if obj.badge.image_thumb:
+            return mark_safe(
+                '<img src="/media/{url}" width="75" height="75" >'.format(url = obj.badge.image_thumb.url.split('/media/')[-1])
+            )
+        else:
+            return mark_safe(
+                '<img src="/media/not-available.png" width="75" height="75" >'
+            )
+
+    def get_issuer_thumbnail(self, obj):
+        """ Get the issuer's thumbnail in the admin """
+
+        if obj.badge.issuer.image_thumb:
+            return mark_safe(
+                '<img src="/media/{url}" width="75" height="75" >'.format(url = obj.badge.issuer.image_thumb.url.split('/media/')[-1])
+            )
+        else:
+            return mark_safe(
+                '<img src="/media/not-available.png" width="75" height="75" >'
+            )
+
 
     def save_model(self, request, obj, form, change):
         if not change:
@@ -403,8 +421,8 @@ class DiplofyAdminSite(AdminSite):
             'Assertions': 5,
             'Contactaus': 6,
             'Interested': 7,
-            'Users': 8,
-            'Groups': 9
+            'Groups': 8,
+            'Users': 9
         }
         app_dict = self._build_app_dict(request)
 
