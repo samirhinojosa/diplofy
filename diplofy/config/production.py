@@ -9,7 +9,7 @@ ALLOALLOWED_HOSTS = ['159.203.41.156']
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'diplofydb',
+        'NAME': 'diplofy',
         'USER': 'diplofy_usr',
         'PASSWORD': 'Diplo@PWD#DB2019_',
         'HOST': 'db',                     
