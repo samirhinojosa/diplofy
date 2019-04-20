@@ -6,9 +6,6 @@ from .base import *
 DEBUG = True
 
 
-
-
-
 # Development's database settings
 
 DATABASES = {

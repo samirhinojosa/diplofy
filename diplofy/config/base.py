@@ -105,8 +105,6 @@ USE_L10N = True
 USE_TZ = True
 
 
-
-
 # Media files (Images)
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'

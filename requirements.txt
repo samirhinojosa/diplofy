@@ -1,7 +1,4 @@
 Django==2.2
-gunicorn==19.9.0
-psycopg2-binary==2.7.7
-Pillow>=5.4.1
+psycopg2-binary==2.8.2
+Pillow>=6.0.0
 django-import-export>=1.2.0
-
-
