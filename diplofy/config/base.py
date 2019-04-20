@@ -10,8 +10,6 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '9ldp=otty4be9lb)et0326jfd+y9qln0d6%uan#+e4wegwin&n'
 
 
-
-
 # Application definition
 
 DJANGO_APPS = [
