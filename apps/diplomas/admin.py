@@ -38,7 +38,7 @@ class IssuerAdmin(admin.ModelAdmin):
         }),
         ('Audit', {
             'classes': ('collapse',),
-            'fields': ('created', 'created_by', 'modified', 'modified_by')
+            'fields': (('created', 'created_by'), ('modified', 'modified_by'))
         }),
     ]
 
@@ -225,6 +225,9 @@ class RecipientResource(resources.ModelResource):
         fields = ('id', 'first_name', 'last_name', 'telephone', 'email', 'created_by', 'modified_by')
 
     def before_import_row(self, row, **kwargs):
+        row['first_name'] = (row['first_name'].title()).strip()
+        row['last_name'] = (row['last_name'].title()).strip()
+        row['email'] = (row['email'].lower()).strip()
         if not row['id']:
             row['created_by'] = kwargs.get('user')
         else:
@@ -436,11 +439,11 @@ class DiplofyAdminSite(AdminSite):
         return app_list
 
 #Admin by defaul 
-admin.site.register(Assertion, AssertionAdmin)
-admin.site.register(Recipient, RecipientAdmin)
-admin.site.register(Tag, TagAdmin)
-admin.site.register(Badge, BadgeAdmin)
-admin.site.register(Issuer, IssuerAdmin)
+#admin.site.register(Assertion, AssertionAdmin)
+#admin.site.register(Recipient, RecipientAdmin)
+#admin.site.register(Tag, TagAdmin)
+#admin.site.register(Badge, BadgeAdmin)
+#admin.site.register(Issuer, IssuerAdmin)
 
 #Diplofy's admin customed
 diplofy_admin_site = DiplofyAdminSite(name='diplofy_admin')
