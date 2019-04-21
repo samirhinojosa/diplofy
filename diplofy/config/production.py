@@ -3,8 +3,6 @@ from .base import *
 
 ALLOWED_HOSTS = ['159.203.26.57']
 
-DEBUG = True
-
 
 # Development's database settings
 
