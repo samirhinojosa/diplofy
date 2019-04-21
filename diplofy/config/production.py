@@ -3,7 +3,7 @@ from .base import *
 
 # SECURITY WARNING: don't run with debug turned on in production!
 
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['165.22.73.229', 'localhost']
 
