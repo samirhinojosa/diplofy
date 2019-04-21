@@ -1,8 +1,11 @@
 from .base import *
 
+
+# SECURITY WARNING: don't run with debug turned on in production!
+
 DEBUG = True
 
-ALLOWED_HOSTS = ['165.22.65.171', 'localhost']
+ALLOWED_HOSTS = ['165.22.73.229', 'localhost']
 
 
 # Development's database settings
