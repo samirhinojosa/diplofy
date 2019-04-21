@@ -179,8 +179,7 @@ form .aligned table p {
 
 fieldset .fieldBox {
     float: left;
-    /*margin-right: 20px;*/
-    width: 50%;    
+    margin-right: 20px;
 }
 
 /* WIDE FIELDSETS */
@@ -354,7 +353,7 @@ body.popup .submit-row {
     width: 2.2em;
 }
 
-.vTextField {
+.vTextField, .vUUIDField {
     width: 20em;
 }
 

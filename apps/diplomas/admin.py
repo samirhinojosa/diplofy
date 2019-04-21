@@ -51,7 +51,7 @@ class IssuerAdmin(admin.ModelAdmin):
             )
         else:
             return mark_safe(
-                '<img src="/media/not-available.png" width="75" height="75" >'
+                '<img src="/static/not-available.png" width="75" height="75" >'
             )
 
     def slug(self, obj):
@@ -180,7 +180,7 @@ class BadgeAdmin(admin.ModelAdmin):
             )
         else:
             return mark_safe(
-                '<img src="/media/not-available.png" width="75" height="75" >'
+                '<img src="/static/not-available.png" width="75" height="75" >'
             )
 
     def get_linkedin_thumb(self, obj):
@@ -192,7 +192,7 @@ class BadgeAdmin(admin.ModelAdmin):
             )
         else:
             return mark_safe(
-                '<img src="/media/not-available.png" width="75" height="75" >'
+                '<img src="/static_files/not-available.png" width="75" height="75" >'
             )
 
     def slug(self, obj):
