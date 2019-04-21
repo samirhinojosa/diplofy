@@ -10,7 +10,7 @@ DEBUG = True
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'diplofy_db',
         'USER': 'diplofy_usr',
         'PASSWORD': 'diplofy_pwd',
