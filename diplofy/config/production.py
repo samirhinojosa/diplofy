@@ -1,7 +1,11 @@
 from .base import *
 
 
+<<<<<<< HEAD
 ALLOWED_HOSTS = ['165.22.65.171', 'localhost']
+=======
+ALLOWED_HOSTS = ['localhost']
+>>>>>>> development
 
 
 # Development's database settings
