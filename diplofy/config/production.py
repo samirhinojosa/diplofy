@@ -1,7 +1,9 @@
 from .base import *
 
 
-ALLOWED_HOSTS = ['165.22.65.171', 'localhost']
+
+ALLOWED_HOSTS = ['localhost']
+
 
 
 # Development's database settings
