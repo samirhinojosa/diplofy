@@ -12,7 +12,7 @@ DATABASES = {
         'NAME': 'diplofydb',
         'USER': 'diplofy_usr',
         'PASSWORD': 'Diplo@PWD#DB2019_',
-        'HOST': '159.203.26.57',                     
-        'PORT': '5432', 
+        'HOST': 'localhost',                     
+        'PORT': '', 
     }
 }
