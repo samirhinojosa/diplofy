@@ -4,10 +4,10 @@ services:
   web:
     build: .
     ports:
-      - '7000:7000'
+      - '8000:8000'
     volumes:
       - ./:/usr/src/app
-    command: python3 manage.py runserver 0.0.0.0:7000 --settings=diplofy.config.development
+    command: python3 manage.py runserver 0.0.0.0:8000 --settings=diplofy.config.development
     links:
       - 'db'
 
