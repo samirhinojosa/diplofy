@@ -1,5 +1,6 @@
 from .base import *
 
+DEBUG = True
 
 ALLOWED_HOSTS = ['165.22.65.171', 'localhost']
 
