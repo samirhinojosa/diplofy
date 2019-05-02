@@ -2,12 +2,11 @@ from django.contrib.admin import AdminSite
 from django.contrib import admin
 from django.utils.safestring import mark_safe
 from import_export.admin import ImportMixin
-from .models import Issuer, Badge, Tag, Recipient, Assertion
 from import_export.resources import ModelResource
 from import_export.widgets import ForeignKeyWidget
 from import_export import fields, resources
 from apps.df_auth.models import User
-
+from .models import Issuer, Diploma, DiplomaDetail, Tag, Recipient, Assertion
 
 class IssuerAdmin(admin.ModelAdmin):
     """
@@ -21,7 +20,7 @@ class IssuerAdmin(admin.ModelAdmin):
         'get_thumbnail', 'name'
     ] 
     list_filter = [
-        'created'
+        'created_by', 'created'
     ]
     search_fields = [
         'name', 'location'
@@ -76,7 +75,7 @@ class TagAdmin(admin.ModelAdmin):
         'name', 'slug'
     ] 
     list_filter = [
-        'created'
+        'created_by', 'created'
     ]
     search_fields = [
         'name'
@@ -93,6 +92,101 @@ class TagAdmin(admin.ModelAdmin):
             'fields': ('created', 'created_by', 'modified', 'modified_by')
         }),
     ]
+
+    def slug(self, obj):
+        return obj.user.slug
+
+    def save_model(self, request, obj, form, change):
+        if not change:
+            obj.created_by = request.user
+        else:
+            obj.modified_by = request.user
+        obj.save()
+
+
+class DiplomaDetailInline(admin.TabularInline):
+    """
+    Django admin of Type of diplomas
+    """
+    model = DiplomaDetail
+    max_num = 2
+    readonly_fields = [
+        'id', 'created'  
+    ]
+    fields = [
+        'id', 'diploma_detail', 'criteria', 'created'         
+    ]
+
+    def save_model(self, request, obj, form, change):
+        if not change:
+            obj.created_by = request.user
+        else:
+            obj.modified_by = request.user
+        obj.save()
+
+
+class DiplomaAdmin(admin.ModelAdmin):
+    """
+    Django admin of diploma
+    """
+    inlines = [DiplomaDetailInline]
+    list_display = [
+        'get_thumbnail', 'name', 'diploma_type', 'issuer', 'location',  
+        'created', 'created_by'
+    ] 
+    list_display_links = [
+        'get_thumbnail', 'name',
+    ] 
+    list_filter = [
+        'issuer__name', 'diploma_type', 'created', 
+    ]
+    search_fields = [
+        'name', 'location'
+    ]
+    readonly_fields = [
+        'slug', 'get_thumbnail', 'get_linkedin_thumb', 'created', 'created_by',
+        'modified', 'modified_by'
+    ]
+    fieldsets  = [
+        ("Diploma's details", {
+            'fields': ('issuer', 'name', 'diploma_type', 'slug', 'url', 'description', 
+                        'tags', 'location')
+        }),
+        ("Diploma's main image", {
+            'fields': ('img_badge', 'get_thumbnail')
+        }),
+        ("Diploma's image for linkedin", {
+            'fields': ('img_badge_in', 'get_linkedin_thumb')
+        }),
+        ('Audit', {
+            'classes': ('collapse',),
+            'fields': ('created', 'created_by', 'modified', 'modified_by')
+        }),
+    ]
+
+    def get_thumbnail(self, obj):
+        """ Get the diplomas's thumbnail in the admin """
+
+        if obj.img_badge_thumb:
+            return mark_safe(
+                '<img src="/media/{url}" width="75" height="75" >'.format(url = obj.img_badge_thumb.url.split('/media/')[-1])
+            )
+        else:
+            return mark_safe(
+                '<img src="/static/not-available.png" width="75" height="75" >'
+            )
+
+    def get_linkedin_thumb(self, obj):
+        """ Get the diploma's thumbnail for linkedin in the admin """
+
+        if obj.img_badge_in_thumb:
+            return mark_safe(
+                '<img src="/media/{url}" width="75" height="75" >'.format(url = obj.img_badge_in_thumb.url.split('/media/')[-1])
+            )
+        else:
+            return mark_safe(
+                '<img src="/static_files/not-available.png" width="75" height="75" >'
+            )
 
     def slug(self, obj):
         return obj.user.slug
@@ -132,38 +226,34 @@ class AssertionInline(admin.TabularInline):
         obj.save()
 
 
-class BadgeAdmin(admin.ModelAdmin):
+class DiplomaDetailAdmin(admin.ModelAdmin):
     """
-    Django admin of bagdes
+    Django admin of diploma's detail
     """
     inlines = [AssertionInline]
     list_display = [
-        'get_thumbnail', 'name', 'id', 'issuer', 'location',  
+        'get_thumbnail', 'id', 'diploma', 'issuer', 'diploma_detail',    
         'created', 'created_by'
     ] 
     list_display_links = [
-        'get_thumbnail', 'name',
+        'get_thumbnail', 'id'
     ] 
     list_filter = [
-        'issuer', 'tags', 'created'
+        'diploma__name', 'diploma__issuer__name', 'diploma_detail', 'created', 
     ]
     search_fields = [
-        'name', 'location'
+        'diploma__name', 'diploma__issuer__name', 
     ]
     readonly_fields = [
-        'id', 'slug', 'get_thumbnail', 'get_linkedin_thumb', 'created', 'created_by',
-        'modified', 'modified_by'
+        'id', 'get_thumbnail', 'diploma', 'issuer', 'diploma_detail', 'criteria',
+        'created', 'created_by', 'modified', 'modified_by'
     ]
     fieldsets  = [
-        ("Badge's details", {
-            'fields': ('issuer', 'id', 'name', 'slug', 'url', 'description', 'tags', 'criteria', 
-                        'location')
+        ("Diploma", {
+            'fields': ('get_thumbnail', 'diploma', 'issuer',)
         }),
-        ("Badge's main image", {
-            'fields': ('image', 'get_thumbnail')
-        }),
-        ("Badge's image for linkedin", {
-            'fields': ('image_linkedin', 'get_linkedin_thumb')
+        ("Diploma's details", {
+            'fields': ('id', 'diploma_detail', 'criteria',)
         }),
         ('Audit', {
             'classes': ('collapse',),
@@ -171,39 +261,36 @@ class BadgeAdmin(admin.ModelAdmin):
         }),
     ]
 
-    def get_thumbnail(self, obj):
-        """ Get the issuer's thumbnail in the admin """
+    def issuer(self, obj):
+        return obj.diploma.issuer
 
-        if obj.image_thumb:
+    def get_thumbnail(self, obj):
+        """ Get the diplomas's thumbnail in the admin """
+
+        if obj.diploma.img_badge_thumb:
             return mark_safe(
-                '<img src="/media/{url}" width="75" height="75" >'.format(url = obj.image_thumb.url.split('/media/')[-1])
+                '<img src="/media/{url}" width="75" height="75" >'.format(url = obj.diploma.img_badge_thumb.url.split('/media/')[-1])
             )
         else:
             return mark_safe(
                 '<img src="/static/not-available.png" width="75" height="75" >'
             )
 
-    def get_linkedin_thumb(self, obj):
-        """ Get the badge's thumbnail in the admin """
 
-        if obj.image_linkedin_thumb:
-            return mark_safe(
-                '<img src="/media/{url}" width="75" height="75" >'.format(url = obj.image_linkedin_thumb.url.split('/media/')[-1])
-            )
-        else:
-            return mark_safe(
-                '<img src="/static_files/not-available.png" width="75" height="75" >'
-            )
 
-    def slug(self, obj):
-        return obj.user.slug
-    
-    def save_model(self, request, obj, form, change):
-        if not change:
-            obj.created_by = request.user
-        else:
-            obj.modified_by = request.user
-        obj.save()
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 class RecipientResource(resources.ModelResource):
@@ -284,131 +371,19 @@ class RecipientAdmin(ImportMixin, admin.ModelAdmin):
         return result
 
 
-class AssertionResource(resources.ModelResource):
-    """
-    Django admin's way to import assertions mass
-    """
-    recipient = fields.Field(
-        column_name = 'recipient',
-        attribute = 'recipient',
-        widget = ForeignKeyWidget(Recipient, 'email')
-    )
-    badge_name = fields.Field(
-        column_name = 'badge_name',
-        attribute = 'badge',
-        widget = ForeignKeyWidget(Badge, 'name')
-    )
-    badge_id = fields.Field(
-        column_name = 'badge_id',
-        attribute = 'badge',
-        widget = ForeignKeyWidget(Badge, 'id')
-    )
-    created_by = fields.Field(
-        column_name = 'created_by',
-        attribute = 'created_by',
-        widget = ForeignKeyWidget(User, 'username')
-    )
-    modified_by = fields.Field(
-        column_name = 'modified_by',
-        attribute = 'modified_by',
-        widget = ForeignKeyWidget(User, 'username')
-    )
-        
-    class Meta:
-        model = Assertion
-        exclude = ('sent')
-        fields = ('id', 'recipient', 'recipient', 'badge_name', 'badge_id', 
-                    'issued_on', 'expires', 'short_url')
-    
-    def before_import_row(self, row, **kwargs):
-        if not row['id']:
-            row['created_by'] = kwargs.get('user')
-        else:
-            row['modified_by'] = kwargs.get('user')
 
 
-class AssertionAdmin(ImportMixin, admin.ModelAdmin):
-    """
-    Django admin of Assertions
-    """
-    resource_class = AssertionResource
-    
-    list_display = [
-        'licence', 'recipient', 'badge', 'issuer', 'issued_on', 'sent', 
-    ] 
-    list_display_links = [
-        'licence', 'recipient',
-    ] 
-    list_filter = [
-        'badge', 'badge__issuer', 'issued_on', 'created' 
-    ]
-    search_fields = [
-        'recipient'
-    ]
-    readonly_fields = [
-        'id', 'licence', 'email', 'get_badge_thumbnail', 'issuer', 'get_issuer_thumbnail', 'short_url', 'sent', 'created', 'created_by', 'modified', 'modified_by'
-    ]
-    fieldsets  = [
-        ("Assertion's details", {
-            'fields': ('id', 'licence', 'recipient', 'email', 'badge', 'get_badge_thumbnail', 'issuer', 'get_issuer_thumbnail', 'issued_on', 'expires',
-                        'short_url', 'sent')
-        }),
-        ('Audit', {
-            'classes': ('collapse',),
-            'fields': ('created', 'created_by', 'modified', 'modified_by')
-        }),
-    ]
-
-    def email(self, obj):
-        return obj.recipient.email
-    
-    def issuer(self, obj):
-        return obj.badge.issuer
-
-    def slug(self, obj):
-        return obj.user.slug
-
-    def get_badge_thumbnail(self, obj):
-        """ Get the issuer's thumbnail in the admin """
-
-        if obj.badge.image_thumb:
-            return mark_safe(
-                '<img src="/media/{url}" width="75" height="75" >'.format(url = obj.badge.image_thumb.url.split('/media/')[-1])
-            )
-        else:
-            return mark_safe(
-                '<img src="/media/not-available.png" width="75" height="75" >'
-            )
-
-    def get_issuer_thumbnail(self, obj):
-        """ Get the issuer's thumbnail in the admin """
-
-        if obj.badge.issuer.image_thumb:
-            return mark_safe(
-                '<img src="/media/{url}" width="75" height="75" >'.format(url = obj.badge.issuer.image_thumb.url.split('/media/')[-1])
-            )
-        else:
-            return mark_safe(
-                '<img src="/media/not-available.png" width="75" height="75" >'
-            )
 
 
-    def save_model(self, request, obj, form, change):
-        if not change:
-            obj.created_by = request.user
-        else:
-            obj.modified_by = request.user
-        obj.save()
 
-    def import_data(self, dataset, dry_run=False, raise_errors=False, 
-                    use_transactions=None, collect_failed_rows=False, **kwargs):
-        """ Getting the user's request to pass it to the import """
 
-        result = AssertionResource.import_data(dataset, dry_run=False, raise_errors=False, 
-                                                use_transactions=None, user=self.request.user)
 
-        return result
-        
+
+
+
+
+
+
 
 class DiplofyAdminSite(AdminSite):
     def get_app_list(self, request):
@@ -419,13 +394,14 @@ class DiplofyAdminSite(AdminSite):
         ordering = {
             'Issuers': 1,
             'Tags': 2,
-            'Badges': 3,
-            'Recipients': 4,
-            'Assertions': 5,
-            'Contactaus': 6,
-            'Interested': 7,
-            'Groups': 8,
-            'Users': 9
+            'Diplomas': 3,
+            'Types of Diplomas': 4,
+            'Recipients': 5,
+            'Assertions': 6,
+            'Contactaus': 7,
+            'Interested': 8,
+            'Groups': 9,
+            'Users': 10
         }
         app_dict = self._build_app_dict(request)
 
@@ -438,18 +414,21 @@ class DiplofyAdminSite(AdminSite):
 
         return app_list
 
+
+
 #Admin by defaul 
 #admin.site.register(Assertion, AssertionAdmin)
 #admin.site.register(Recipient, RecipientAdmin)
 #admin.site.register(Tag, TagAdmin)
-#admin.site.register(Badge, BadgeAdmin)
+#admin.site.register(Diploma, DiplomaAdmin)
 #admin.site.register(Issuer, IssuerAdmin)
 
 #Diplofy's admin customed
 diplofy_admin_site = DiplofyAdminSite(name='diplofy_admin')
 
-diplofy_admin_site.register(Assertion, AssertionAdmin)
+#diplofy_admin_site.register(Assertion, AssertionAdmin)
 diplofy_admin_site.register(Recipient, RecipientAdmin)
 diplofy_admin_site.register(Tag, TagAdmin)
-diplofy_admin_site.register(Badge, BadgeAdmin)
+diplofy_admin_site.register(Diploma, DiplomaAdmin)
+diplofy_admin_site.register(DiplomaDetail, DiplomaDetailAdmin)
 diplofy_admin_site.register(Issuer, IssuerAdmin)
