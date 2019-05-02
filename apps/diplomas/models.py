@@ -184,7 +184,7 @@ class DiplomaDetail(TimeStampedAuthModel):
         verbose_name_plural = 'Types of Diplomas'
 
     def __str__(self):
-        return '%s' % (self.diploma.name)
+        return '%s' % (self.get_diploma_detail_display())
 
 
 class Recipient(TimeStampedAuthModel):
@@ -221,8 +221,8 @@ class Assertion(TimeStampedAuthModel):
     diploma_detail = models.ForeignKey(DiplomaDetail, on_delete=models.CASCADE, help_text='Diploma')
     issued_on = models.DateField('Issued on', null=True, help_text="Issued's day")
     expires = models.DateField('Expires on', null=True, blank=True, help_text="Expired's day")
-    short_url = models.URLField("Assertion's short url", max_length=200, blank=True, help_text="Assertion's short url")
-    sent = models.BooleanField('Assertion sent', default=False, help_text="If it's false, the assertion hasn't been sent")
+    short_url = models.URLField("Short url", max_length=200, blank=True, help_text="Assertion's short url")
+    sent = models.BooleanField('Sent', default=False, help_text="If it's false, the assertion hasn't been sent")
     
     # if diploma is a certificate. 
     """ 

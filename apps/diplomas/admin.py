@@ -232,7 +232,7 @@ class DiplomaDetailAdmin(admin.ModelAdmin):
     """
     inlines = [AssertionInline]
     list_display = [
-        'get_thumbnail', 'id', 'diploma', 'issuer', 'diploma_detail',    
+        'id', 'get_thumbnail', 'diploma_detail', 'diploma', 'issuer',     
         'created', 'created_by'
     ] 
     list_display_links = [
@@ -277,22 +277,6 @@ class DiplomaDetailAdmin(admin.ModelAdmin):
             )
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 class RecipientResource(resources.ModelResource):
     """
     Django admin's way to import recipients mass
@@ -315,6 +299,13 @@ class RecipientResource(resources.ModelResource):
         row['first_name'] = (row['first_name'].title()).strip()
         row['last_name'] = (row['last_name'].title()).strip()
         row['email'] = (row['email'].lower()).strip()
+
+
+        if row['telephone'] == None:
+            row['telephone'] = ' '
+        elif row['telephone'] != ' ':
+            row['telephone'] = (row['telephone']).strip()
+
         if not row['id']:
             row['created_by'] = kwargs.get('user')
         else:
@@ -371,18 +362,130 @@ class RecipientAdmin(ImportMixin, admin.ModelAdmin):
         return result
 
 
+class AssertionResource(resources.ModelResource):
+    """
+    Django admin's way to import assertions mass
+    """
+    recipient = fields.Field(
+        column_name = 'recipient',
+        attribute = 'recipient',
+        widget = ForeignKeyWidget(Recipient, 'email')
+    )
+    diploma_id = fields.Field(
+        column_name = 'diploma_id',
+        attribute = 'diploma_detail',
+        widget = ForeignKeyWidget(DiplomaDetail, 'id')
+    )
+    created_by = fields.Field(
+        column_name = 'created_by',
+        attribute = 'created_by',
+        widget = ForeignKeyWidget(User, 'username')
+    )
+    modified_by = fields.Field(
+        column_name = 'modified_by',
+        attribute = 'modified_by',
+        widget = ForeignKeyWidget(User, 'username')
+    )
+        
+    class Meta:
+        model = Assertion
+        exclude = ('sent')
+        fields = ('id', 'recipient', 'recipient', 'diploma_id', 
+                    'issued_on', 'expires', 'short_url')
+    
+    def before_import_row(self, row, **kwargs):
+        if row['short_url'] == None:
+            row['short_url'] = ' '
+        elif row['short_url'] != ' ':
+            row['short_url'] = (row['short_url']).strip()
+
+        if not row['id']:
+            row['created_by'] = kwargs.get('user')
+        else:
+            row['modified_by'] = kwargs.get('user')
 
 
+class AssertionAdmin(ImportMixin, admin.ModelAdmin):
+    """
+    Django admin of Assertions
+    """
+    resource_class = AssertionResource
+    
+    list_display = [
+        'licence', 'recipient', 'diploma', 'diploma_detail', 'issuer', 'issued_on', 'sent', 
+    ] 
+    list_display_links = [
+        'licence', 'recipient',
+    ]
+    list_filter = [
+        'diploma_detail__diploma__issuer__name', 'diploma_detail__diploma__name', 'sent', 'issued_on', 'created' 
+    ]
+    search_fields = [
+        'diploma_detail__diploma__issuer__name', 'diploma_detail__diploma__name', 'recipient__first_name', 'recipient__last_name'
+    ]
+    readonly_fields = [
+        'id', 'licence', 'email', 'diploma', 'diploma_detail', 'diploma_image', 'issuer', 'get_issuer_thumbnail', 'short_url', 'sent', 
+        'created', 'created_by', 'modified', 'modified_by'
+    ] 
+    fieldsets  = [
+        ("Diploma", {
+            'fields': ('issuer', 'diploma', 'diploma_image', 'diploma_detail',)
+        }),
+        ("Assertion's details", {
+            'fields': ('licence', 'recipient', 'email', 'issued_on', 'expires',
+                        'short_url', 'sent')
+        }),
+        ('Audit', {
+            'classes': ('collapse',),
+            'fields': ('created', 'created_by', 'modified', 'modified_by')
+        }),
+    ]
 
+    def email(self, obj):
+        return obj.recipient.email
+    
+    def diploma(self, obj):
+        return obj.diploma_detail.diploma.name
+    
+    def issuer(self, obj):
+        return obj.diploma_detail.diploma.issuer
 
+    def slug(self, obj):
+        return obj.user.slug
 
+    def diploma_image(self, obj):
+        """ Get the issuer's thumbnail in the admin """
 
+        if obj.diploma_detail.diploma.img_badge_thumb:
+            return mark_safe(
+                '<img src="/media/{url}" width="75" height="75" >'.format(url = obj.diploma_detail.diploma.img_badge_thumb.url.split('/media/')[-1])
+            )
+        else:
+            return mark_safe(
+                '<img src="/media/not-available.png" width="75" height="75" >'
+            )
 
+    def get_issuer_thumbnail(self, obj):
+        """ Get the issuer's thumbnail in the admin """
 
+        if obj.diploma_detail.diploma.issuer.image_thumb:
+            return mark_safe(
+                '<img src="/media/{url}" width="75" height="75" >'.format(url = obj.diploma_detail.diploma.issuer.image_thumb.url.split('/media/')[-1])
+            )
+        else:
+            return mark_safe(
+                '<img src="/media/not-available.png" width="75" height="75" >'
+            )
 
+    def has_add_permission(self, request, obj=None):
+        return False
 
-
-
+    def save_model(self, request, obj, form, change):
+        if not change:
+            obj.created_by = request.user
+        else:
+            obj.modified_by = request.user
+        obj.save()
 
 
 class DiplofyAdminSite(AdminSite):
@@ -426,7 +529,7 @@ class DiplofyAdminSite(AdminSite):
 #Diplofy's admin customed
 diplofy_admin_site = DiplofyAdminSite(name='diplofy_admin')
 
-#diplofy_admin_site.register(Assertion, AssertionAdmin)
+diplofy_admin_site.register(Assertion, AssertionAdmin)
 diplofy_admin_site.register(Recipient, RecipientAdmin)
 diplofy_admin_site.register(Tag, TagAdmin)
 diplofy_admin_site.register(Diploma, DiplomaAdmin)
