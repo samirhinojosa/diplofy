@@ -6,6 +6,7 @@ from import_export.resources import ModelResource
 from import_export.widgets import ForeignKeyWidget
 from import_export import fields, resources
 from apps.df_auth.models import User
+from apps.utils.admin import FilterUserAdmin
 from .models import Issuer, Diploma, DiplomaDetail, Tag, Recipient, Assertion
 
 class IssuerAdmin(admin.ModelAdmin):
@@ -275,6 +276,9 @@ class DiplomaDetailAdmin(admin.ModelAdmin):
             return mark_safe(
                 '<img src="/static/not-available.png" width="75" height="75" >'
             )
+    
+    def has_add_permission(self, request, obj=None):
+        return False
 
 
 class RecipientResource(resources.ModelResource):
@@ -405,7 +409,7 @@ class AssertionResource(resources.ModelResource):
             row['modified_by'] = kwargs.get('user')
 
 
-class AssertionAdmin(ImportMixin, admin.ModelAdmin):
+class AssertionAdmin(ImportMixin, FilterUserAdmin):
     """
     Django admin of Assertions
     """
