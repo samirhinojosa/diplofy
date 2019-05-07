@@ -29,7 +29,7 @@ diplofy_admin_site.index_title = "Welcome to Diplofy's Portal"
 #admin.site.index_title = "Welcome to Diplofy's Portal"
 
 urlpatterns = [
-    #path('my-admin/', admin.site.urls),
+    #path('myadmin/', admin.site.urls),
     path('myadmin/', diplofy_admin_site.urls),
 ]
 
