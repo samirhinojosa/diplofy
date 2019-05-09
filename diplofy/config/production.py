@@ -5,7 +5,7 @@ from .base import *
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['165.22.73.229', 'localhost']
+ALLOWED_HOSTS = ['165.227.41.89', 'localhost']
 
 
 # Development's database settings
