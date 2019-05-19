@@ -1,6 +1,8 @@
+from django.contrib import admin
 from django.utils.safestring import mark_safe
 from apps.df_auth.models import User
-from .models import Issuers
+from apps.utils.admin import CSSAdminMixin
+from ..models import Issuer
 
 
 class IssuerAdmin(admin.ModelAdmin, CSSAdminMixin):

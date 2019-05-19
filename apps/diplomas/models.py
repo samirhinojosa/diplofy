@@ -86,6 +86,14 @@ class Tag(TimeStampedAuthModel):
         return reverse('tag', args=[str(self.id)])
 
 
+
+
+
+
+
+
+
+
 class Diploma(TimeStampedAuthModel):
     """
     Store a diploma
@@ -185,6 +193,21 @@ class DiplomaDetail(TimeStampedAuthModel):
 
     def __str__(self):
         return '%s' % (self.get_diploma_detail_display())
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 class Recipient(TimeStampedAuthModel):
