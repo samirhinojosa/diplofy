@@ -45,11 +45,11 @@ APP_ORDER = [
 #Order of links into the admin´s views/templates
 LINKS_ORDERING = {
     'Issuers': 1,
-    'Tags': 2,
+    'Events': 2,
     'Diplomas': 3,
-    'Types of Diplomas': 4,
-    'Recipients': 5,
-    'Assertions': 6,
+    'Recipients': 4,
+    'Assertions': 5,
+    'Tags': 6,   
     'Contactaus': 7,
     'Interested': 8,
     'Groups': 9,

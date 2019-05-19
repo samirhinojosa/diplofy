@@ -86,17 +86,9 @@ class Tag(TimeStampedAuthModel):
         return reverse('tag', args=[str(self.id)])
 
 
-
-
-
-
-
-
-
-
-class Diploma(TimeStampedAuthModel):
+class Event(TimeStampedAuthModel):
     """
-    Store a diploma
+    Store a event
 
     Open Badges specification of Badge
     https://www.imsglobal.org/sites/default/files/Badges/OBv2p0Final/index.html#BadgeClass
@@ -110,27 +102,61 @@ class Diploma(TimeStampedAuthModel):
         (BADGE, 'Badge'),
     )
 
-    name = models.CharField('Diploma', max_length=150, help_text='Name of the diploma')
-    slug = models.SlugField('Slug', max_length=150, help_text='Name of the diploma in format URL')
-    url = models.URLField('Website', max_length=200, blank=True, help_text='Website of the course')
-    diploma_type = models.CharField('Type of the diploma', max_length=1, choices=DIPLOMA_TYPES,
+    name = models.CharField('Event', max_length=150, help_text='Name of the event')
+    slug = models.SlugField('Slug', max_length=150, help_text='Name of the event in format URL')
+    url = models.URLField('Website', max_length=200, blank=True, help_text='Website of the event')
+    diploma_type = models.CharField('Type of diploma', max_length=1, choices=DIPLOMA_TYPES,
                     default=BADGE) 
     description = models.TextField('Description', max_length=500, blank=True, 
-                    help_text='Enter a brief description of the diploma')
-    issuer = models.ForeignKey(Issuer, on_delete=models.CASCADE, help_text="Diploma's issuer")
-    tags = models.ManyToManyField(Tag, related_name='diplomas_tags', help_text="Tags of the diploma")
-    location = models.CharField('Location', max_length=150, blank=True, help_text='Location of the course')
-    # if diploma is a badge.
-    # In future, linkedin's (img_badge_in) badge must be done based on main image
+                    help_text='Enter a brief description of the event')
+    issuer = models.ForeignKey(Issuer, on_delete=models.CASCADE, help_text="Event's issuer")
+    tags = models.ManyToManyField(Tag, related_name='events_tags', help_text="Tags of the event")
+    location = models.CharField('Location', max_length=150, blank=True, help_text='Location of the event')
+    
+    class Meta:
+        ordering = ['-created']
+        verbose_name = 'Event'
+        verbose_name_plural = 'Events'
+
+    def __str__(self):
+        return '%s - %s' % (self.name, self.issuer.name)
+
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.name)                
+        super(Event, self).save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        return reverse('event', args=[str(self.id)])
+
+
+class Diploma(TimeStampedAuthModel):
+    """
+    Store detail of a diploma, related to Diploma
+    """    
+    #choices
+    ASSISTANT, GUESTSPEAKER = ('A', 'G')
+    PARTICIPANT_TYPES = (
+        (ASSISTANT, 'Assistant'),
+        (GUESTSPEAKER, 'Guest Speaker'),
+    )
+
+    id = models.UUIDField('Id', primary_key=True, default=uuid.uuid4, editable=False)
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, help_text='Event')
+    participant_type = models.CharField('Type of participant', max_length=1, choices=PARTICIPANT_TYPES)
+    criteria = models.TextField('Criteria', max_length=700, blank=True, 
+                help_text="Enter the diploma's criteria separated by '|'")
+    
+    ########## if diploma is a badge.
     img_badge = models.ImageField('Badge', max_length=250, blank=True, upload_to=badge_image, 
                     help_text='Image of the badge')
     img_badge_thumb = models.ImageField('Thumbnail', max_length=250, blank=True, upload_to=badge_image_thumb, 
                     help_text='Thumbnail of the badge')
+    # In future, linkedin's (img_badge_in) badge must be done based on main image
     img_badge_in = models.ImageField('Badge for Linkedin', max_length=250, blank=True, 
                         upload_to=badge_image_linkedin, help_text='Image for Linkedin of the badge')
     img_badge_in_thumb = models.ImageField('Thumbnail for Linkedin', max_length=250, blank=True, 
                             upload_to=badge_image_linkedin_thumb, help_text='Thumbnail for Linkedin of the badge')
-    # if diploma is a certificate. 
+    ########## if diploma is a certificate. 
     """ 
     img_certificate = models.ImageField('Image', max_length=250, blank=True, upload_to=certificate_image, help_text='Image of the diploma') 
     Unlike badge, certificate must be done for each assertion               
@@ -142,10 +168,9 @@ class Diploma(TimeStampedAuthModel):
         verbose_name_plural = 'Diplomas'
 
     def __str__(self):
-        return (self.name)
+        return '%s' % (self.get_participant_type_display())
 
     def save(self, *args, **kwargs):
-        self.slug = slugify(self.name)
 
         if self.created:
             orig = Diploma.objects.get(pk=self.pk)
@@ -164,50 +189,6 @@ class Diploma(TimeStampedAuthModel):
                 self.img_badge_in_thumb = thumbnail_image(self.img_badge_in)
                  
         super(Diploma, self).save(*args, **kwargs)
-
-    def get_absolute_url(self):
-        return reverse('diploma', args=[str(self.id)])
-
-
-class DiplomaDetail(TimeStampedAuthModel):
-    """
-    Store detail of a diploma, related to Diploma
-    """    
-    #choices
-    ASSISTANT, GUESTSPEAKER = ('A', 'G')
-    DIPLOMA_DETAIL = (
-        (ASSISTANT, 'Assistant'),
-        (GUESTSPEAKER, 'Guest Speaker'),
-    )
-
-    id = models.UUIDField('Id', primary_key=True, default=uuid.uuid4, editable=False)
-    diploma = models.ForeignKey(Diploma, on_delete=models.CASCADE, help_text='Diploma')
-    diploma_detail = models.CharField('Detail of the diploma', max_length=1, choices=DIPLOMA_DETAIL)
-    criteria = models.TextField('Criteria', max_length=700, blank=True, 
-                help_text="Enter the diploma's criteria separated by '|'")
-
-    class Meta:
-        ordering = ['-created']
-        verbose_name = 'Type of Diploma'
-        verbose_name_plural = 'Types of Diplomas'
-
-    def __str__(self):
-        return '%s' % (self.get_diploma_detail_display())
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 class Recipient(TimeStampedAuthModel):
@@ -241,7 +222,7 @@ class Assertion(TimeStampedAuthModel):
     """
     licence = models.CharField('License', max_length=150, unique=True, help_text='Generated automatically')
     recipient = models.ForeignKey(Recipient, on_delete=models.CASCADE, help_text='Recipient')
-    diploma_detail = models.ForeignKey(DiplomaDetail, on_delete=models.CASCADE, help_text='Diploma')
+    diploma = models.ForeignKey(Diploma, on_delete=models.CASCADE, help_text='Diploma')
     issued_on = models.DateField('Issued on', null=True, help_text="Issued's day")
     expires = models.DateField('Expires on', null=True, blank=True, help_text="Expired's day")
     short_url = models.URLField("Short url", max_length=200, blank=True, help_text="Assertion's short url")
@@ -254,7 +235,7 @@ class Assertion(TimeStampedAuthModel):
 
     class Meta:
         unique_together = [
-            ('recipient', 'diploma_detail') 
+            ('recipient', 'diploma') 
         ]
         ordering = ['-created']
         verbose_name = "Assertion"

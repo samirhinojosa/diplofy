@@ -6,7 +6,7 @@ from import_export.widgets import ForeignKeyWidget
 from import_export import fields, resources
 from apps.df_auth.models import User
 from apps.utils.admin import CSSAdminMixin, FilterUserAdmin
-from ..models import Assertion, Recipient, DiplomaDetail
+from ..models import Assertion, Recipient, Diploma
 
 
 class AssertionResource(resources.ModelResource):
@@ -20,8 +20,8 @@ class AssertionResource(resources.ModelResource):
     )
     diploma_id = fields.Field(
         column_name = 'diploma_id',
-        attribute = 'diploma_detail',
-        widget = ForeignKeyWidget(DiplomaDetail, 'id')
+        attribute = 'diploma',
+        widget = ForeignKeyWidget(Diploma, 'id')
     )
     created_by = fields.Field(
         column_name = 'created_by',
@@ -37,7 +37,7 @@ class AssertionResource(resources.ModelResource):
     class Meta:
         model = Assertion
         exclude = ('sent')
-        fields = ('id', 'recipient', 'recipient', 'diploma_id', 
+        fields = ('id', 'recipient', 'diploma_id', 
                     'issued_on', 'expires', 'short_url')
     
     def before_import_row(self, row, **kwargs):
@@ -59,24 +59,24 @@ class AssertionAdmin(ImportMixin, FilterUserAdmin, CSSAdminMixin):
     resource_class = AssertionResource
     
     list_display = [
-        'licence', 'recipient', 'diploma', 'diploma_detail', 'issuer', 'issued_on', 'sent', 
+        'recipient', 'licence', 'event', 'diploma', 'issuer', 'issued_on', 'sent', 
     ] 
     list_display_links = [
         'licence', 'recipient',
     ]
     list_filter = [
-        'diploma_detail__diploma__issuer__name', 'diploma_detail__diploma__name', 'sent', 'issued_on', 'created' 
+        'diploma__event__issuer__name', 'diploma__event__name', 'sent', 'issued_on', 'created' 
     ]
     search_fields = [
-        'diploma_detail__diploma__issuer__name', 'diploma_detail__diploma__name', 'recipient__first_name', 'recipient__last_name'
+        'diploma__event__issuer__name', 'diploma__event__name', 'recipient__first_name', 'recipient__last_name'
     ]
     readonly_fields = [
-        'id', 'licence', 'email', 'diploma', 'diploma_detail', 'image', 'issuer', 'get_issuer_thumbnail', 'short_url', 'sent', 
+        'id', 'licence', 'recipient', 'email', 'event', 'diploma', 'image', 'issuer', 'issuer_image', 'short_url', 'sent', 
         'created', 'created_by', 'modified', 'modified_by'
     ] 
     fieldsets  = [
         ("Diploma", {
-            'fields': (('diploma', 'issuer'), ('image', 'diploma_detail'))
+            'fields': (('event', 'issuer'), ('image', 'issuer_image'), ('diploma'))
         }),
         ("Assertion's details", {
             'fields': ('licence', ('recipient', 'email'), ('issued_on', 'expires'),
@@ -91,11 +91,11 @@ class AssertionAdmin(ImportMixin, FilterUserAdmin, CSSAdminMixin):
     def email(self, obj):
         return obj.recipient.email
     
-    def diploma(self, obj):
-        return obj.diploma_detail.diploma.name
+    def event(self, obj):
+        return obj.diploma.event.name
     
     def issuer(self, obj):
-        return obj.diploma_detail.diploma.issuer
+        return obj.diploma.event.issuer
 
     def slug(self, obj):
         return obj.user.slug
@@ -103,21 +103,21 @@ class AssertionAdmin(ImportMixin, FilterUserAdmin, CSSAdminMixin):
     def image(self, obj):
         """ Get the issuer's thumbnail in the admin """
 
-        if obj.diploma_detail.diploma.img_badge_thumb:
+        if obj.diploma.img_badge_thumb:
             return mark_safe(
-                '<img src="/media/{url}" width="75" height="75" >'.format(url = obj.diploma_detail.diploma.img_badge_thumb.url.split('/media/')[-1])
+                '<img src="/media/{url}" width="75" height="75" >'.format(url = obj.diploma.img_badge_thumb.url.split('/media/')[-1])
             )
         else:
             return mark_safe(
                 '<img src="/media/not-available.png" width="75" height="75" >'
             )
 
-    def get_issuer_thumbnail(self, obj):
+    def issuer_image(self, obj):
         """ Get the issuer's thumbnail in the admin """
 
-        if obj.diploma_detail.diploma.issuer.image_thumb:
+        if obj.diploma.event.issuer.image_thumb:
             return mark_safe(
-                '<img src="/media/{url}" width="75" height="75" >'.format(url = obj.diploma_detail.diploma.issuer.image_thumb.url.split('/media/')[-1])
+                '<img src="/media/{url}" width="75" height="75" >'.format(url = obj.diploma.event.issuer.image_thumb.url.split('/media/')[-1])
             )
         else:
             return mark_safe(

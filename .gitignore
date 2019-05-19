@@ -1,5 +1,6 @@
 ### Project's folders ###
 /diplofy/media/*
+/diplofy/static/*
 
 ### Django ###
 *\migrations*
