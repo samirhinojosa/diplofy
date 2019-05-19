@@ -34,12 +34,27 @@ PROJECT_APPS = [
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + PROJECT_APPS
 
+#Order of Apps into the project
 APP_ORDER = [
     'diplomas',
     'contactus',
     'df_auth'
     'utils',
 ]
+
+#Order of links into the admin´s views/templates
+LINKS_ORDERING = {
+    'Issuers': 1,
+    'Tags': 2,
+    'Diplomas': 3,
+    'Types of Diplomas': 4,
+    'Recipients': 5,
+    'Assertions': 6,
+    'Contactaus': 7,
+    'Interested': 8,
+    'Groups': 9,
+    'Users': 10
+}
 
 AUTH_USER_MODEL = 'df_auth.User' # Custom user
 

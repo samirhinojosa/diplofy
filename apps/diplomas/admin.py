@@ -6,15 +6,9 @@ from import_export.resources import ModelResource
 from import_export.widgets import ForeignKeyWidget
 from import_export import fields, resources
 from apps.df_auth.models import User
-from apps.utils.admin import FilterUserAdmin
+from apps.utils.admin import FilterUserAdmin, CSSAdminMixin, DiplofyAdminSite
 from .models import Issuer, Diploma, DiplomaDetail, Tag, Recipient, Assertion
 
-
-class CSSAdminMixin(object):
-    class Media:
-        css = {
-            'all': ('css/extra-style.css',),
-        }
 
 class IssuerAdmin(admin.ModelAdmin, CSSAdminMixin):
     """
@@ -502,68 +496,6 @@ class AssertionAdmin(ImportMixin, FilterUserAdmin, CSSAdminMixin):
 
 
 
-
-
-from django.apps import apps
-from django.utils.translation import gettext as _
-from django.template.response import TemplateResponse
-
-ordering = {
-    'Issuers': 1,
-    'Tags': 2,
-    'Diplomas': 3,
-    'Types of Diplomas': 4,
-    'Recipients': 5,
-    'Assertions': 6,
-    'Contactaus': 7,
-    'Interested': 8,
-    'Groups': 9,
-    'Users': 10
-}
-
-class DiplofyAdminSite(AdminSite):
-    def get_app_list(self, request):
-        """
-        Return a sorted list of all installed apps that have been
-        registered in this site.
-        """
-
-        app_dict = self._build_app_dict(request)
-
-        # Sort the apps alphabetically.
-        app_list = sorted(app_dict.values(), key=lambda x: x['name'].lower())
-
-        # Sort the models alphabetically within each app.
-        for app in app_list:
-            app['models'].sort(key=lambda x: ordering[x['name']])
-
-        return app_list
-    
-    def app_index(self, request, app_label, extra_context=None):
-        """
-        Return a sorted list of all models within each app.
-        """
-
-        app_dict = self._build_app_dict(request, app_label)
-        if not app_dict:
-            raise Http404('The requested admin page does not exist.')
-        # Sort the models alphabetically within each app.
-        app_dict['models'].sort(key=lambda x: ordering[x['name']])
-        app_name = apps.get_app_config(app_label).verbose_name
-        context = {
-            **self.each_context(request),
-            'title': _('%(app)s administration') % {'app': app_name},
-            'app_list': [app_dict],
-            'app_label': app_label,
-            **(extra_context or {}),
-        }
-
-        request.current_app = self.name
-
-        return TemplateResponse(request, self.app_index_template or [
-            'admin/%s/app_index.html' % app_label,
-            'admin/app_index.html'
-        ], context)
 
 
 #Admin by defaul 
