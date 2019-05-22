@@ -23,7 +23,7 @@ def upload_to_image(self, filename, flag):
     if self.__class__.__name__ == 'Issuer':
         name = slugify(self.name)
     elif self.__class__.__name__ == 'Diploma':
-        name = slugify(self.event.name)
+        name = '%s_%s' % (slugify(self.event.name), self.participant_type)
 
     file_path = ''
     filename = ''
