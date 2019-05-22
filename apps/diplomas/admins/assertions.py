@@ -109,7 +109,7 @@ class AssertionAdmin(ImportMixin, FilterUserAdmin, CSSAdminMixin):
             )
         else:
             return mark_safe(
-                '<img src="/media/not-available.png" width="75" height="75" >'
+                '<img src="/static/not-available.png" width="75" height="75" >'
             )
 
     def issuer_image(self, obj):
@@ -121,7 +121,7 @@ class AssertionAdmin(ImportMixin, FilterUserAdmin, CSSAdminMixin):
             )
         else:
             return mark_safe(
-                '<img src="/media/not-available.png" width="75" height="75" >'
+                '<img src="/static/not-available.png" width="75" height="75" >'
             )
 
     def has_add_permission(self, request, obj=None):

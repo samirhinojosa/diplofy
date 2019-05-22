@@ -17,7 +17,7 @@ def compress_image(image):
     im_io = BytesIO()
 
     #Saving the image
-    img.save(im_io , format=im_format, quality=80)
+    img.save(im_io , format=im_format, quality=90)
     image_optimized = File(im_io, name=image.name) 
 
     return image_optimized
@@ -46,7 +46,7 @@ def thumbnail_image(image):
     img = img.resize((basewidth,hsize), Image.ANTIALIAS)
     
     #Saving the image
-    img.save(im_io , format=im_format, quality=100)
+    img.save(im_io , format=im_format, quality=90)
     image_optimized = File(im_io, name=image.name)    
 
     return image_optimized

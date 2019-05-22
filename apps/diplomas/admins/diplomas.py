@@ -61,7 +61,7 @@ class DiplomaAdmin(admin.ModelAdmin, CSSAdminMixin):
             'fields': (('issuer', 'event'))
         }),
         ("Diploma's details", {
-            'fields': (('participant_type', 'id'), 'criteria',)
+            'fields': (('participant_type', 'id'), 'criteria')
         }),
         ("Diploma's main image", {
             'fields': ('img_badge', 'thumbnail')

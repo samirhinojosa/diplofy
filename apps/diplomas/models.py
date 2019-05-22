@@ -177,14 +177,14 @@ class Diploma(TimeStampedAuthModel):
             if orig.img_badge != self.img_badge:
                 self.img_badge = compress_image(self.img_badge)            
                 self.img_badge_thumb = thumbnail_image(self.img_badge)
-            elif orig.img_badge_in != self.img_badge_in:
+            if orig.img_badge_in != self.img_badge_in:
                 self.img_badge_in = compress_image(self.img_badge_in)            
                 self.img_badge_in_thumb = thumbnail_image(self.img_badge_in)
         else:
             if self.img_badge != '':
                 self.img_badge = compress_image(self.img_badge)
                 self.img_badge_thumb = thumbnail_image(self.img_badge)
-            elif self.img_badge_in != '':
+            if self.img_badge_in != '':
                 self.img_badge_in = compress_image(self.img_badge_in)            
                 self.img_badge_in_thumb = thumbnail_image(self.img_badge_in)
                  

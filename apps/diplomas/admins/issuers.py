@@ -27,7 +27,7 @@ class IssuerAdmin(admin.ModelAdmin, CSSAdminMixin):
     ]
     fieldsets  = [
         ("Issuer's details", {
-            'fields': (('name', 'slug'), 'url', 'telephone', 'description')
+            'fields': (('name', 'slug'), 'url', ('email', 'telephone'), 'location', 'description')
         }),
         ("Issuer's image", {
             'fields': ('image', 'thumbnail')

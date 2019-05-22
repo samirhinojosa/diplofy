@@ -37,16 +37,16 @@ def upload_to_image(self, filename, flag):
             filename = '%s_thumb.%s' % (name, ext)
     elif self.__class__.__name__ == 'Diploma':
         if flag == 'badge_image':
-            file_path = 'diplomas/badges/%s/' % (self.event.issuer.slug)
+            file_path = 'diplomas/badges/%s/main/' % (self.event.issuer.slug)
             filename = '%s.%s' % (name, ext)
         elif flag == 'badge_thumb': 
-            file_path = 'diplomas/badges/%s/thumbnails/' % (self.event.issuer.slug)
+            file_path = 'diplomas/badges/%s/main/' % (self.event.issuer.slug)
             filename = '%s_thumb.%s' % (name, ext)
         elif flag == 'badge_linkedin': 
             file_path = 'diplomas/badges/%s/linkedin/' % (self.event.issuer.slug)
             filename = '%s_in.%s' % (name, ext)
         elif flag == 'badge_linkedin_thumb': 
-            file_path = 'diplomas/badges/%s/linkedin/thumbnails/' % (self.event.issuer.slug)
+            file_path = 'diplomas/badges/%s/linkedin/' % (self.event.issuer.slug)
             filename = '%s_in_thumb.%s' % (name, ext)
 
         current_date = datetime.now()
