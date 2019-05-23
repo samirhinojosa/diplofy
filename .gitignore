@@ -2,6 +2,10 @@
 /diplofy/media/*
 /diplofy/static/*
 
+# exception to the rule
+!/diplofy/media/.gitkeep 
+!/diplofy/static/.gitkeep 
+
 ### Django ###
 *\migrations*
 
