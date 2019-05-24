@@ -5,7 +5,7 @@ from .base import *
 
 #DEBUG = True
 
-ALLOWED_HOSTS = ['www.backoffice.diplofy.com', 'backoffice.diplofy.com', '178.128.237.183', 'localhost']
+ALLOWED_HOSTS = ['backoffice.diplofy.com', '178.128.237.183', 'localhost']
 
 
 # Development's database settings
