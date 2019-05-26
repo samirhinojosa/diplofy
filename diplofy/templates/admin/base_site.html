@@ -4,6 +4,10 @@
 
 {% block title %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
 
+{% block extrahead %}
+    <link rel="shortcut icon" href="{% static 'favicon.ico' %}" />
+{% endblock %}
+
 {% block branding %}
 <h1 id="Diplofy's Administration">
     <a href="{% url 'admin:index' %}">
