@@ -87,7 +87,7 @@ class DiplomaAdmin(admin.ModelAdmin, CSSAdminMixin):
 
         if obj.img_badge_thumb:
             return mark_safe(
-                '<img src="/media/{url}" width="75" height="75" >'.format(url = obj.img_badge_thumb.url.split('/media/')[-1])
+                '<img src="/media/{url}" width="75" height="auto" >'.format(url = obj.img_badge_thumb.url.split('/media/')[-1])
             )
         else:
             return mark_safe(
@@ -99,9 +99,16 @@ class DiplomaAdmin(admin.ModelAdmin, CSSAdminMixin):
 
         if obj.img_badge_in_thumb:
             return mark_safe(
-                '<img src="/media/{url}" width="150" height="80" >'.format(url = obj.img_badge_in_thumb.url.split('/media/')[-1])
+                '<img src="/media/{url}" width="150" height="auto" >'.format(url = obj.img_badge_in_thumb.url.split('/media/')[-1])
             )
         else:
             return mark_safe(
                 '<img src="/static/not-available.png" width="75" height="75" >'
             )
+
+    def save_model(self, request, obj, form, change):
+        if not change:
+            obj.created_by = request.user
+        else:
+            obj.modified_by = request.user
+        obj.save()

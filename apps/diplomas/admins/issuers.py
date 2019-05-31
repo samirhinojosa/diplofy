@@ -10,8 +10,7 @@ class IssuerAdmin(admin.ModelAdmin, CSSAdminMixin):
     Django admin of Issuers
     """
     list_display = [
-        'thumbnail', 'name', 
-        'created', 'created_by', 'modified', 'modified_by'
+        'thumbnail', 'name', 'created', 'created_by', 'modified', 'modified_by'
     ] 
     list_display_links = [
         'thumbnail', 'name'
@@ -43,7 +42,7 @@ class IssuerAdmin(admin.ModelAdmin, CSSAdminMixin):
 
         if obj.image_thumb:
             return mark_safe(
-                '<img src="/media/{url}" width="75" height="75" >'.format(url = obj.image_thumb.url.split('/media/')[-1])
+                '<img src="/media/{url}" width="75" height="auto" >'.format(url = obj.image_thumb.url.split('/media/')[-1])
             )
         else:
             return mark_safe(
