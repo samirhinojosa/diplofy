@@ -59,7 +59,7 @@ class AssertionAdmin(ImportMixin, FilterUserAdmin, CSSAdminMixin):
     resource_class = AssertionResource
     
     list_display = [
-        'recipient', 'licence', 'event', 'diploma', 'issuer', 'issued_on', 'sent', 'created_by'
+        'recipient', 'licence', 'event', 'diploma', 'issuer', 'issued_on', 'sent', 'created', 'created_by'
     ] 
     list_display_links = [
         'licence', 'recipient',

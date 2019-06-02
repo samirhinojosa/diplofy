@@ -40,8 +40,7 @@ class DiplomaAdmin(admin.ModelAdmin, CSSAdminMixin):
     """
     inlines = [AssertionInline]
     list_display = [
-        'thumbnail', 'issuer', 'event_name', 'participant_type', 'id', 
-        'created', 'created_by'
+        'thumbnail', 'issuer', 'event_name', 'participant_type', 'id', 'created', 'created_by'
     ] 
     list_display_links = [
         'thumbnail', 'event_name', 'id'
