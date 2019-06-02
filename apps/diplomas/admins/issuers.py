@@ -10,7 +10,7 @@ class IssuerAdmin(admin.ModelAdmin, CSSAdminMixin):
     Django admin of Issuers
     """
     list_display = [
-        'thumbnail', 'name', 'created', 'created_by', 'modified', 'modified_by'
+        'thumbnail', 'name', 'created', 'created_by'
     ] 
     list_display_links = [
         'thumbnail', 'name'
@@ -55,6 +55,7 @@ class IssuerAdmin(admin.ModelAdmin, CSSAdminMixin):
     def save_model(self, request, obj, form, change):
         if not change:
             obj.created_by = request.user
+            obj.modified = ''
         else:
             obj.modified_by = request.user
         obj.save()

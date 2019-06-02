@@ -9,8 +9,7 @@ class EventAdmin(admin.ModelAdmin, CSSAdminMixin):
     Django admin of Event
     """
     list_display = [
-        'name', 'diploma_type', 'issuer', 'location',  
-        'created', 'created_by'
+        'name', 'diploma_type', 'issuer', 'location', 'created', 'created_by'
     ] 
     list_display_links = [
         'name',

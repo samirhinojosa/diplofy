@@ -9,7 +9,7 @@ class TagAdmin(admin.ModelAdmin, CSSAdminMixin):
     Django admin of Tags
     """
     list_display = [
-        'name', 'slug', 'created', 'created_by', 'modified', 'modified_by'
+        'name', 'slug', 'created', 'created_by'
     ] 
     list_display_links = [
         'name', 'slug'
