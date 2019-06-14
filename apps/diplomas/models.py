@@ -4,6 +4,10 @@ from django.utils.text import slugify
 from django.urls import reverse 
 from apps.utils.models import TimeStampedAuthModel
 from apps.utils.utils import compress_image, thumbnail_image
+
+# esto se puede cambiar por
+# from . import helpers
+#       helpers.issuer_image  bla bla bla
 from .helpers import (
     issuer_image, 
     issuer_image_thumb, 

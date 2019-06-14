@@ -10,6 +10,7 @@ services:
     command: python3 manage.py runserver 0.0.0.0:8000 --settings=diplofy.config.development
     links:
       - 'db'
+      - 'mailtrap'
 
   db:
     image: 'postgres'
@@ -19,6 +20,11 @@ services:
       - POSTGRES_PASSWORD=root
     volumes:
       - pgdata:/var/lib/postgresql/data/
+
+  mailtrap:
+    image: 'eaudeweb/mailtrap'
+    ports:
+      - '8081:80'
 
 volumes:
   pgdata:

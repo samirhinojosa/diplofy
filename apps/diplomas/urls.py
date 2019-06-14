@@ -1,6 +1,7 @@
 from django.urls import path
-from .views import HomeRedirectView
+from . import views
 
 urlpatterns = [
-    path('', HomeRedirectView.as_view())
+    path('', views.IndexRedirectView.as_view()),  
+    path('sendemail/', views.SendEmail.as_view()),
 ]

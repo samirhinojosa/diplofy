@@ -1,6 +1,7 @@
 from PIL import Image
 from io import BytesIO
 from django.core.files import File
+from django.core.mail import EmailMultiAlternatives
 
 
 def compress_image(image):
@@ -50,3 +51,19 @@ def thumbnail_image(image):
     image_optimized = File(im_io, name=image.name)    
 
     return image_optimized
+
+
+def custom_email(subject, from_email, to_email, html_template, ctx):
+    """
+    Send custom html email
+    """
+    
+    try:
+        html_content = html_template.render(ctx)
+        msg = EmailMultiAlternatives(subject, html_content, from_email, [to_email])
+        msg.attach_alternative(html_content, "text/html")
+        msg.send()
+    except:
+        return False
+    
+    return True

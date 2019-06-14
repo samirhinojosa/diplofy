@@ -38,7 +38,7 @@ class DiplomaAdmin(admin.ModelAdmin, CSSAdminMixin):
     """
     Django admin of Diploma
     """
-    inlines = [AssertionInline]
+    #inlines = [AssertionInline]
     list_display = [
         'thumbnail', 'issuer', 'event_name', 'participant_type', 'id', 'created', 'created_by'
     ] 

@@ -105,7 +105,7 @@ class AssertionAdmin(ImportMixin, FilterUserAdmin, CSSAdminMixin):
 
         if obj.diploma.img_badge_thumb:
             return mark_safe(
-                '<img src="/media/{url}" width="75" height="75" >'.format(url = obj.diploma.img_badge_thumb.url.split('/media/')[-1])
+                '<img src="/media/{url}" width="75" height="auto" >'.format(url = obj.diploma.img_badge_thumb.url.split('/media/')[-1])
             )
         else:
             return mark_safe(
@@ -117,7 +117,7 @@ class AssertionAdmin(ImportMixin, FilterUserAdmin, CSSAdminMixin):
 
         if obj.diploma.event.issuer.image_thumb:
             return mark_safe(
-                '<img src="/media/{url}" width="75" height="75" >'.format(url = obj.diploma.event.issuer.image_thumb.url.split('/media/')[-1])
+                '<img src="/media/{url}" width="75" height="auto" >'.format(url = obj.diploma.event.issuer.image_thumb.url.split('/media/')[-1])
             )
         else:
             return mark_safe(
