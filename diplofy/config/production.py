@@ -3,8 +3,6 @@ from .base import *
 
 # SECURITY WARNING: don't run with debug turned on in production!
 
-#DEBUG = True
-
 ALLOWED_HOSTS = ['backoffice.diplofy.com', '178.128.237.183', 'localhost']
 
 

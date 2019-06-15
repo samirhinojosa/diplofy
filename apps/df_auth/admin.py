@@ -1,8 +1,8 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
+from apps.diplomas.admin import diplofy_admin_site
 from .forms import UserCreationForm, UserChangeForm
 from .models import User, ProxyUser, ProxyGroup
-from apps.diplomas.admin import diplofy_admin_site
 
 
 class UserAdmin(UserAdmin):

@@ -46,12 +46,6 @@ def issuer_update(sender, instance, **kwargs):
                 if os.path.isfile(old_thumb.path):
                     os.remove(old_thumb.path)
 
-""" @receiver(post_save, sender=Issuer)
-def issuer_update_name(sender, instance, **kwargs):
-    if not sender.objects.get(pk=instance.pk).name == instance.name:
-        issuer_image(instance.image, instance.name) """
-
-
 @receiver(pre_delete, sender=Diploma)
 def diploma_delete(sender, instance, **kwargs):
     """

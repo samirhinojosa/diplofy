@@ -13,6 +13,9 @@ services:
     command: sleep infinity
     environment:
       DJANGO_SETTINGS_MODULE: diplofy.config.devcontainer
+    links:
+      - 'db'
+      - 'mailtrap'
 
   db:
     image: 'postgres'
@@ -21,3 +24,8 @@ services:
       - '5432:5432'
     environment:
       - POSTGRES_PASSWORD=LocalPassword
+
+  mailtrap:
+    image: 'eaudeweb/mailtrap'
+    ports:
+      - '8081:80'

@@ -4,7 +4,8 @@ from .base import *
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+
 
 # Development's database settings
 
@@ -24,17 +25,18 @@ DATABASES = {
     }
 }
 
-# Development's email settings
+
+# Development's mass email settings
+
+EMAIL_HOST = 'mailtrap'
+EMAIL_HOST_USER = ''
+EMAIL_HOST_PASSWORD = ''
+EMAIL_PORT = '25'
 
 
-# https://www.youtube.com/watch?v=X7DWErkNVJs
-# https://blog.mailtrap.io/sending-emails-in-python-tutorial-with-code-examples/
-# https://mailtrap.io/inboxes/621778/settings
+# Development's single email settings with tools to details and analysis
 
-EMAIL_HOST = 'smtp.mailtrap.io'
+""" EMAIL_HOST = 'smtp.mailtrap.io'
 EMAIL_HOST_USER = '0811bcd07fe723'
 EMAIL_HOST_PASSWORD = 'f16c396d318323'
-EMAIL_PORT = '2525'
-
-# In Productions should be 0
-EMAIL_SLEEP = 11
+EMAIL_PORT = '2525' """

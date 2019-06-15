@@ -4,7 +4,8 @@ from django.views import View
 from django.conf import settings
 from django.template.loader import get_template
 from django.core.mail import EmailMultiAlternatives
-from apps.diplomas.models import Assertion
+from django.contrib.auth.mixins import LoginRequiredMixin
+from .models import Assertion
 from apps.utils.utils import custom_email
 
 
@@ -15,10 +16,12 @@ class IndexRedirectView(View):
     def get(self, request):
         return HttpResponseRedirect('myadmin/')
 
-class SendEmail(View):
+
+class SendEmail(LoginRequiredMixin, View):
     """
     Web pages to send notifications
     """
+    
     def get(self, request):
 
         assertions = Assertion.objects.filter(sent=False).exclude(short_url=' ')
@@ -28,10 +31,6 @@ class SendEmail(View):
         aux = 0
 
         for asserttion in assertions:
-
-            #if settings.DEBUG is True and aux == 2:
-            #    aux = 0
-            #    time.sleep(settings.EMAIL_SLEEP)
 
             subject = asserttion.diploma.event.issuer.name + ' te envió un diploma digital por haber participado del curso ' + asserttion.diploma.event.name
                     

@@ -1,9 +1,9 @@
 from django.contrib import admin
-from django.contrib.admin import AdminSite
+from django.conf import settings
 from django.apps import apps
+from django.contrib.admin import AdminSite
 from django.utils.translation import gettext as _
 from django.template.response import TemplateResponse
-from django.conf import settings
 
 
 class CSSAdminMixin(object):

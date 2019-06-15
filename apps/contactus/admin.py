@@ -1,6 +1,7 @@
 from django.contrib import admin
-from .models import SubscriptionBase
 from apps.diplomas.admin import diplofy_admin_site
+from .models import SubscriptionBase
+
 
 class SubscriptionBaseAdmin(admin.ModelAdmin):
     """

@@ -107,6 +107,11 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
+# Backoffice's login page
+
+LOGIN_URL = '/myadmin/login/?next=/'
+
+
 # Internationalization
 
 LANGUAGE_CODE = 'en-us'
